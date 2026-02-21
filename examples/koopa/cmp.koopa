@@ -1,0 +1,130 @@
+decl @getint(): i32
+
+decl @getch(): i32
+
+decl @getarray(*i32): i32
+
+decl @putint(i32)
+
+decl @putch(i32)
+
+decl @putarray(i32, *i32)
+
+decl @starttime()
+
+decl @stoptime()
+
+fun @int_greater_than(%0: i32, %1: i32): i32 {
+%entry:
+  %ret = alloc i32
+  @i = alloc i32
+  @j = alloc i32
+  jump %2
+
+%2:
+  store %0, @i
+  store %1, @j
+  %3 = load @i
+  %4 = load @j
+  %5 = gt %3, %4
+  br %5, %if_then, %if_else
+
+%if_then:
+  store 1, %ret
+  jump %end
+
+%6:
+  jump %if_end
+
+%if_else:
+  store 0, %ret
+  jump %end
+
+%7:
+  jump %if_end
+
+%if_end:
+  jump %end
+
+%end:
+  %8 = load %ret
+  ret %8
+}
+
+fun @char_greater_than(%9: i32, %10: i32): i32 {
+%entry:
+  %ret = alloc i32
+  @i = alloc i32
+  @j = alloc i32
+  jump %11
+
+%11:
+  store %9, @i
+  store %10, @j
+  %12 = load @i
+  %13 = load @j
+  %14 = gt %12, %13
+  br %14, %if_then, %if_else
+
+%if_then:
+  store 1, %ret
+  jump %end
+
+%15:
+  jump %if_end
+
+%if_else:
+  store 0, %ret
+  jump %end
+
+%16:
+  jump %if_end
+
+%if_end:
+  jump %end
+
+%end:
+  %17 = load %ret
+  ret %17
+}
+
+fun @main(): i32 {
+%entry:
+  %ret = alloc i32
+  @r1 = alloc i32
+  @r2 = alloc i32
+  %18 = alloc i32
+  jump %19
+
+%19:
+  %20 = sub 0, 1
+  %21 = call @int_greater_than(%20, 1)
+  store %21, @r1
+  %22 = sub 0, 1
+  %23 = call @char_greater_than(%22, 1)
+  store %23, @r2
+  %24 = load @r1
+  %25 = eq %24, 0
+  %26 = ne %25, 0
+  store %26, %18
+  br %26, %land_rhs, %land_end
+
+%land_rhs:
+  %27 = load @r2
+  %28 = eq %27, 0
+  %29 = ne %28, 0
+  store %29, %18
+  jump %land_end
+
+%land_end:
+  %30 = load %18
+  store %30, %ret
+  jump %end
+
+%31:
+  jump %end
+
+%end:
+  %32 = load %ret
+  ret %32
+}

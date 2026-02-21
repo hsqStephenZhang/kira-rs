@@ -1,0 +1,91 @@
+decl @getint(): i32
+
+decl @getch(): i32
+
+decl @getarray(*i32): i32
+
+decl @putint(i32)
+
+decl @putch(i32)
+
+decl @putarray(i32, *i32)
+
+decl @starttime()
+
+decl @stoptime()
+
+fun @bar(%0: i32, %1: i32, %2: i32): i32 {
+%entry:
+  %ret = alloc i32
+  @x = alloc i32
+  @y = alloc i32
+  @z = alloc i32
+  @arith_mean = alloc i32
+  @ugly_mean = alloc i32
+  jump %3
+
+%3:
+  store %0, @x
+  store %1, @y
+  store %2, @z
+  %4 = load @x
+  %5 = load @y
+  %6 = add %4, %5
+  %7 = load @z
+  %8 = add %6, %7
+  %9 = div %8, 3
+  store %9, @arith_mean
+  %10 = load @x
+  %11 = load @y
+  %12 = add %10, %11
+  %13 = div %12, 2
+  %14 = mul %13, 2
+  %15 = load @z
+  %16 = add %14, %15
+  %17 = div %16, 3
+  store %17, @ugly_mean
+  %18 = load @x
+  %19 = load @y
+  %20 = eq %18, %19
+  br %20, %if_then, %if_else
+
+%if_then:
+  %21 = load @y
+  store %21, %ret
+  jump %end
+
+%22:
+  jump %if_end
+
+%if_else:
+  %23 = load @z
+  store %23, %ret
+  jump %end
+
+%24:
+  jump %if_end
+
+%if_end:
+  jump %end
+
+%end:
+  %25 = load %ret
+  ret %25
+}
+
+fun @main(): i32 {
+%entry:
+  %ret = alloc i32
+  jump %26
+
+%26:
+  store 1, %ret
+  jump %end
+
+%27:
+  jump %end
+
+%end:
+  %28 = load %ret
+  ret %28
+}

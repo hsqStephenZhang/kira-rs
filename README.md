@@ -13,9 +13,17 @@ cargo run -- -koopa input.c -o output.koopa
 cargo run -- -riscv input.c -o output.S
 ```
 
+## Examples
+
+the `examples/c` directory contains a list of example programs that's provided by [kecc-public](https://github.com/kaist-cp/kecc-public/). 90% of them are supported except some programs that contains `sizeof`, `struct` .etc. and `examples/koopa` directory contains the koopa ir that is generated via this project.
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md).
+
+## Acknowledgements
+
+- [kecc-public](https://github.com/kaist-cp/kecc-public/). Another great educational compiler. We used their unittest suite.
 
 ## Copyright and License
 

@@ -1,0 +1,72 @@
+decl @getint(): i32
+
+decl @getch(): i32
+
+decl @getarray(*i32): i32
+
+decl @putint(i32)
+
+decl @putch(i32)
+
+decl @putarray(i32, *i32)
+
+decl @starttime()
+
+decl @stoptime()
+
+fun @fibonacci(%0: i32): i32 {
+%entry:
+  %ret = alloc i32
+  @n = alloc i32
+  jump %1
+
+%1:
+  store %0, @n
+  %2 = load @n
+  %3 = lt %2, 2
+  br %3, %if_then, %if_else
+
+%if_then:
+  %4 = load @n
+  %5 = add %4, 2
+  store %5, @n
+  jump %if_end
+
+%if_else:
+  jump %if_end
+
+%if_end:
+  %6 = load @n
+  %7 = sub %6, 2
+  %8 = call @fibonacci(%7)
+  %9 = load @n
+  %10 = sub %9, 1
+  %11 = call @fibonacci(%10)
+  %12 = add %8, %11
+  store %12, %ret
+  jump %end
+
+%13:
+  jump %end
+
+%end:
+  %14 = load %ret
+  ret %14
+}
+
+fun @main(): i32 {
+%entry:
+  %ret = alloc i32
+  jump %15
+
+%15:
+  store 1, %ret
+  jump %end
+
+%16:
+  jump %end
+
+%end:
+  %17 = load %ret
+  ret %17
+}

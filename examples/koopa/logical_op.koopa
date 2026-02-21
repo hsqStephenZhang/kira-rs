@@ -1,0 +1,119 @@
+decl @getint(): i32
+
+decl @getch(): i32
+
+decl @getarray(*i32): i32
+
+decl @putint(i32)
+
+decl @putch(i32)
+
+decl @putarray(i32, *i32)
+
+decl @starttime()
+
+decl @stoptime()
+
+fun @main(): i32 {
+%entry:
+  %ret = alloc i32
+  @a = alloc i32
+  @b = alloc i32
+  @c = alloc i32
+  @d = alloc i32
+  %0 = alloc i32
+  %1 = alloc i32
+  jump %2
+
+%2:
+  store 0, @a
+  store 0, @b
+  store 0, @c
+  store 0, @d
+  store 1, @a
+  %3 = load @a
+  br %3, %if_then, %if_else
+
+%if_then:
+  jump %if_end
+
+%if_else:
+  store 1, @b
+  jump %if_end
+
+%if_end:
+  %4 = load @a
+  %5 = ne %4, 0
+  store %5, %0
+  br %5, %lor_end, %lor_rhs
+
+%lor_rhs:
+  %6 = load @b
+  %7 = ne %6, 0
+  store %7, %0
+  jump %lor_end
+
+%lor_end:
+  %8 = load %0
+  br %8, %if_then_0, %if_else_0
+
+%if_then_0:
+  %9 = load @b
+  %10 = add %9, 1
+  store %10, @b
+  jump %if_end_0
+
+%if_else_0:
+  jump %if_end_0
+
+%if_end_0:
+  store 1, @c
+  %11 = load @c
+  br %11, %if_then_1, %if_else_1
+
+%if_then_1:
+  store 1, @d
+  jump %if_end_1
+
+%if_else_1:
+  jump %if_end_1
+
+%if_end_1:
+  %12 = load @d
+  br %12, %if_then_2, %if_else_2
+
+%if_then_2:
+  %13 = load @d
+  %14 = add %13, 1
+  store %14, @d
+  jump %if_end_2
+
+%if_else_2:
+  jump %if_end_2
+
+%if_end_2:
+  %15 = load @b
+  %16 = eq %15, 1
+  %17 = ne %16, 0
+  store %17, %1
+  br %17, %land_rhs, %land_end
+
+%land_rhs:
+  %18 = load @d
+  %19 = eq %18, 2
+  %20 = ne %19, 0
+  store %20, %1
+  jump %land_end
+
+%land_end:
+  %21 = load %1
+  store %21, %ret
+  jump %end
+
+%22:
+  jump %end
+
+%end:
+  %23 = load %ret
+  ret %23
+}

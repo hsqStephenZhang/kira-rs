@@ -1,0 +1,77 @@
+global @g_a = alloc [i32, 5], {1, 2, 3, 0, 0}
+
+decl @getint(): i32
+
+decl @getch(): i32
+
+decl @getarray(*i32): i32
+
+decl @putint(i32)
+
+decl @putch(i32)
+
+decl @putarray(i32, *i32)
+
+decl @starttime()
+
+decl @stoptime()
+
+fun @main(): i32 {
+%entry:
+  %ret = alloc i32
+  @a = alloc [i32, 5]
+  @sum = alloc i32
+  @i = alloc i32
+  jump %0
+
+%0:
+  %1 = sub 0, 5
+  %2 = getelemptr @a, 0
+  store 1, %2
+  %3 = getelemptr @a, 1
+  store 2, %3
+  %4 = getelemptr @a, 2
+  store 3, %4
+  %5 = getelemptr @a, 3
+  store 4, %5
+  %6 = getelemptr @a, 4
+  store %1, %6
+  store 0, @sum
+  store 0, @i
+  jump %while_entry
+
+%while_entry:
+  %7 = load @i
+  %8 = lt %7, 5
+  br %8, %while_body, %while_end
+
+%while_body:
+  %9 = load @sum
+  %10 = load @i
+  %11 = getelemptr @a, %10
+  %12 = load %11
+  %13 = add %9, %12
+  store %13, @sum
+  %14 = load @sum
+  %15 = load @i
+  %16 = getelemptr @g_a, %15
+  %17 = load %16
+  %18 = add %14, %17
+  store %18, @sum
+  %19 = load @i
+  %20 = add %19, 1
+  store %20, @i
+  jump %while_entry
+
+%while_end:
+  %21 = load @sum
+  store %21, %ret
+  jump %end
+
+%22:
+  jump %end
+
+%end:
+  %23 = load %ret
+  ret %23
+}

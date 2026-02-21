@@ -1,0 +1,53 @@
+decl @getint(): i32
+
+decl @getch(): i32
+
+decl @getarray(*i32): i32
+
+decl @putint(i32)
+
+decl @putch(i32)
+
+decl @putarray(i32, *i32)
+
+decl @starttime()
+
+decl @stoptime()
+
+fun @main(): i32 {
+%entry:
+  %ret = alloc i32
+  @y = alloc i32
+  @x = alloc i32
+  @temp = alloc i32
+  jump %0
+
+%0:
+  store 1, @y
+  store 0, @x
+  %1 = load @x
+  %2 = load @y
+  %3 = eq %1, %2
+  br %3, %if_then, %if_else
+
+%if_then:
+  store 2, @temp
+  jump %if_end
+
+%if_else:
+  store 5, @temp
+  jump %if_end
+
+%if_end:
+  %4 = load @temp
+  %5 = eq %4, 5
+  store %5, %ret
+  jump %end
+
+%6:
+  jump %end
+
+%end:
+  %7 = load %ret
+  ret %7
+}

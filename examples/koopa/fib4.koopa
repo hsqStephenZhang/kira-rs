@@ -1,0 +1,99 @@
+decl @getint(): i32
+
+decl @getch(): i32
+
+decl @getarray(*i32): i32
+
+decl @putint(i32)
+
+decl @putch(i32)
+
+decl @putarray(i32, *i32)
+
+decl @starttime()
+
+decl @stoptime()
+
+fun @fibonacci(%0: i32): i32 {
+%entry:
+  %ret = alloc i32
+  @n = alloc i32
+  @i = alloc i32
+  @t1 = alloc i32
+  @t2 = alloc i32
+  @next_term = alloc i32
+  jump %1
+
+%1:
+  store %0, @n
+  store 0, @i
+  store 0, @t1
+  store 1, @t2
+  store 0, @next_term
+  %2 = load @n
+  %3 = lt %2, 2
+  br %3, %if_then, %if_else
+
+%if_then:
+  %4 = load @n
+  store %4, %ret
+  jump %end
+
+%5:
+  jump %if_end
+
+%if_else:
+  jump %if_end
+
+%if_end:
+  store 1, @i
+  jump %while_entry
+
+%while_entry:
+  %6 = load @i
+  %7 = load @n
+  %8 = lt %6, %7
+  br %8, %while_body, %while_end
+
+%while_body:
+  %9 = load @t1
+  %10 = load @t2
+  %11 = add %9, %10
+  store %11, @next_term
+  %12 = load @t2
+  store %12, @t1
+  %13 = load @next_term
+  store %13, @t2
+  jump %while_entry
+
+%while_end:
+  %14 = load @t2
+  store %14, %ret
+  jump %end
+
+%15:
+  jump %end
+
+%end:
+  %16 = load %ret
+  ret %16
+}
+
+fun @main(): i32 {
+%entry:
+  %ret = alloc i32
+  jump %17
+
+%17:
+  %18 = call @fibonacci(9)
+  %19 = eq %18, 34
+  store %19, %ret
+  jump %end
+
+%20:
+  jump %end
+
+%end:
+  %21 = load %ret
+  ret %21
+}

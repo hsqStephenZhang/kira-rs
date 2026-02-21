@@ -1,0 +1,113 @@
+global @nonce = alloc i32, 1
+
+decl @getint(): i32
+
+decl @getch(): i32
+
+decl @getarray(*i32): i32
+
+decl @putint(i32)
+
+decl @putch(i32)
+
+decl @putarray(i32, *i32)
+
+decl @starttime()
+
+decl @stoptime()
+
+fun @foo(): i32 {
+%entry:
+  %ret = alloc i32
+  @sum = alloc i32
+  @i = alloc i32
+  @continue_num = alloc i32
+  jump %0
+
+%0:
+  store 0, @sum
+  store 0, @i
+  %1 = load @nonce
+  %2 = mod %1, 98
+  store %2, @continue_num
+  jump %while_entry
+
+%while_entry:
+  %3 = load @i
+  %4 = lt %3, 100
+  br %4, %while_body, %while_end
+
+%while_body:
+  %5 = load @i
+  %6 = load @continue_num
+  %7 = eq %5, %6
+  br %7, %if_then, %if_else
+
+%if_then:
+  %8 = load @i
+  %9 = add %8, 1
+  store %9, @i
+  jump %while_entry
+
+%10:
+  jump %if_end
+
+%if_else:
+  jump %if_end
+
+%if_end:
+  %11 = load @sum
+  %12 = load @i
+  %13 = add %11, %12
+  store %13, @sum
+  %14 = load @i
+  %15 = add %14, 1
+  store %15, @i
+  %16 = load @i
+  %17 = load @continue_num
+  %18 = add %17, 2
+  %19 = eq %16, %18
+  br %19, %if_then_0, %if_else_0
+
+%if_then_0:
+  jump %while_end
+
+%20:
+  jump %if_end_0
+
+%if_else_0:
+  jump %if_end_0
+
+%if_end_0:
+  jump %while_entry
+
+%while_end:
+  %21 = load @sum
+  store %21, %ret
+  jump %end
+
+%22:
+  jump %end
+
+%end:
+  %23 = load %ret
+  ret %23
+}
+
+fun @main(): i32 {
+%entry:
+  %ret = alloc i32
+  jump %24
+
+%24:
+  %25 = call @foo()
+  store %25, %ret
+  jump %end
+
+%26:
+  jump %end
+
+%end:
+  %27 = load %ret
+  ret %27
+}
