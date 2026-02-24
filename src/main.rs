@@ -1,6 +1,9 @@
 mod ast;
 mod codegen;
 mod irgen;
+mod source_file;
+
+use crate::source_file::SourceFile;
 
 use koopa::back::KoopaGenerator;
 use lalrpop_util::lalrpop_mod;
@@ -29,10 +32,18 @@ fn try_main() -> Result<(), Error> {
     output,
   } = CommandLineArgs::parse()?;
   // parse input file
-  let input = read_to_string(input).map_err(Error::File)?;
+  let src = read_to_string(&input).map_err(Error::File)?;
+  let source_file = SourceFile::new(src);
+
   let comp_unit = sysy::CompUnitParser::new()
-    .parse(&input)
-    .map_err(|_| Error::Parse)?;
+    .parse(source_file.src())
+    .map_err(|e| {
+      let e = e.map_location(|offset| {
+        let (line, col) = source_file.lookup_pos(offset);
+        format!("{}:{}:{}", input, line, col)
+      });
+      crate::Error::Parse(format!("{}", e))
+    })?;
   // generate IR
   let program = irgen::generate_program(&comp_unit).map_err(Error::Generate)?;
   if matches!(mode, Mode::Koopa) {
@@ -49,7 +60,7 @@ fn try_main() -> Result<(), Error> {
 enum Error {
   InvalidArgs,
   File(io::Error),
-  Parse,
+  Parse(String),
   Generate(irgen::Error),
   Io(io::Error),
 }
@@ -67,7 +78,7 @@ Options:
   OUTPUT: the output file"#
       ),
       Self::File(err) => write!(f, "invalid input SysY file: {}", err),
-      Self::Parse => write!(f, "error occurred while parsing"),
+      Self::Parse(e) => write!(f, "error occurred while parsing:\n{e}"),
       Self::Generate(err) => write!(f, "{}", err),
       Self::Io(err) => write!(f, "I/O error: {}", err),
     }
