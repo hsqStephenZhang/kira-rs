@@ -1,6 +1,6 @@
 use super::eval::Evaluate;
 use super::func::FunctionInfo;
-use super::scopes::{cur_func, cur_func_mut, Scopes};
+use super::scopes::{Scopes, cur_func, cur_func_mut};
 use super::values::{ExpValue, Initializer, Value};
 use super::{DimsToType, Error, Result};
 use crate::ast::*;
