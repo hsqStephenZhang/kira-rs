@@ -1,0 +1,74 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build_test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
+    timeout-minutes: 30
+    steps:
+    - name: Restore Nightly Toolchain Cache
+      uses: actions/cache/restore@v5
+      with:
+        path: |
+          ~/.rustup/toolchains/nightly-*/
+          ~/.rustup/update-hashes/nightly-*/
+        key: ${{ runner.os }}-rust-nightly-
+        restore-keys: ${{ runner.os }}-rust-nightly-
+
+    - name: Install Nightly Toolchain and Miri
+      id: rust-nightly
+      uses: dtolnay/rust-toolchain@nightly
+      with:
+        components: miri, rust-src
+
+    - name: Save Nightly Toolchain Cache
+      uses: actions/cache/save@v5
+      with:
+        path: |
+          ~/.rustup/toolchains/nightly-*/
+          ~/.rustup/update-hashes/nightly-*/
+        key: ${{ runner.os }}-rust-nightly-${{ steps.rust-nightly.outputs.cachekey }}
+
+    - name: Checkout Koopa
+      uses: actions/checkout@v6
+
+    - name: Setup Cargo Cache
+      uses: actions/cache@v5
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Build
+      run: cargo +stable check && cargo +stable check --all-features
+
+    - name: Clippy
+      run: cargo +stable clippy --all-targets -- -D warnings && cargo +stable clippy --all-targets --all-features -- -D warnings
+
+    - name: Format
+      run: cargo +stable fmt --all --check
+
+    - name: Test
+      run: cargo +stable test --workspace
+
+    - name: Install RISC-V Toolchain
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-riscv64-linux-gnu qemu-user-static
+
+    - name: Run RISC-V Tests
+      run: python3 scripts/test_riscv.py
+
+    - name: Miri
+      run: cargo +nightly miri test --workspace
